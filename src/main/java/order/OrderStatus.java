@@ -1,4 +1,4 @@
-package customer;
+package order;
 
 public enum OrderStatus {
     READY,
