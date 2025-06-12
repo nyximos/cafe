@@ -3,11 +3,13 @@ package cafe;
 import coffee.Coffee;
 import customer.Customer;
 import order.MenuValidator;
+import order.Order;
 import order.OrderHandler;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class Cafe {
 
@@ -29,12 +31,13 @@ public class Cafe {
         return INSTANCE;
     }
 
-    private final OrderHandler orderHandler;
+    private final Barista barista = Barista.INSTANCE;
 
     private final String name;
     private final List<Coffee> menu;
     private final StaffSelector staffSelector;
     private final MenuValidator menuValidator;
+    private final OrderHandler orderHandler;
     private BigDecimal totalSales;
 
     public Cafe(String name, List<Staff> staff, List<Coffee> coffees) {
@@ -61,7 +64,16 @@ public class Cafe {
         Thread.sleep(1000);
         this.getMenu();
         Thread.sleep(1000);
-        orderHandler.handle(orderStaff, customer);
+        Order order = orderHandler.handle(orderStaff, customer);
+
+        Staff baristaStaff = staffSelector.selector(ActionType.MAKE_COFFEE);
+        CompletableFuture.runAsync(() -> {
+            try {
+                barista.make(baristaStaff, order);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public void receive(BigDecimal amount) {

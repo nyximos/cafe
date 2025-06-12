@@ -17,6 +17,7 @@ public class Main {
         while (money != 0) {
             Customer customer = new Customer(money);
             cafe.enter(customer);
+            Thread.sleep(5000);
             System.out.print("\n금액을 입력해주세요! 종료하려면 0을 입력해주세용 :");
             money = Integer.parseInt(br.readLine());
         }

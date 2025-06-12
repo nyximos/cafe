@@ -19,20 +19,20 @@ public class OrderHandler {
 
     private final MenuValidator menuValidator;
 
-    public void handle(Staff orderStaff, Customer customer) throws IOException, InterruptedException {
+    public Order handle(Staff orderStaff, Customer customer) throws IOException, InterruptedException {
         List<OrderProduct> orderProducts = order(orderStaff);
         Order order = new Order(customer, orderProducts);
         orderStaff.say("총 " + order.getQuantity() + "잔, " + order.getAmount() + "원 입니다.");
+            Thread.sleep(1000);
         try {
-            Thread.sleep(1000);
             customer.pay(order);
-            Thread.sleep(1000);
             orderStaff.say("결제 완료됐습니다. 주문하신 메뉴 곧 준비해드리겠습니다~ 감사합니다😇");
             orderStaff.updateStatus(StaffStatus.WAITING);
         } catch (IllegalStateException e) {
             orderStaff.say("잔액이 부족합니다🥵 다음에 또 찾아와주세요!!😭");
             Thread.sleep(1000);
         }
+        return order;
     }
 
     private List<OrderProduct> order(Staff orderStaff) throws IOException {
